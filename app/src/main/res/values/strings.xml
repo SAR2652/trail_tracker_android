@@ -1,0 +1,7 @@
+<resources>
+    <string name="app_name">Poacher Notify</string>
+    <string name="username">Username</string>
+    <string name="password">Password</string>
+    <string name="search">Search</string>
+    <string name="sign_in">Sign In</string>
+</resources>
