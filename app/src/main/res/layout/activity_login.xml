@@ -26,7 +26,6 @@
             android:layout_marginRight="35dp"
             android:inputType="text"
             android:id="@+id/username"
-            android:backgroundTint="@color/underbar"
             android:hint="@string/username"/>
 
         <EditText
@@ -40,7 +39,6 @@
             android:layout_marginTop="15dp"
             android:layout_marginBottom="30dp"
             android:id="@+id/password"
-            android:backgroundTint="@color/underbar"
             android:hint="@string/password"/>
 
         <Button

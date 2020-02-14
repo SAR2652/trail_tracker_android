@@ -31,13 +31,15 @@ import org.json.JSONObject;
 import java.util.HashMap;
 import java.util.Map;
 
-abstract class LoginActivity extends AppCompatActivity implements View.OnClickListener {
+public class LoginActivity extends AppCompatActivity {
 
     EditText userNameEditText, passwordEditText;
     Button signInButton;
-    public ProgressDialog progressDialog;
-    public String email, password;
-    public String TAG = "";
+    ProgressDialog progressDialog;
+    String email, password, access_token;
+    String TAG = "";
+    SharedPreferences object;
+    SharedPreferences.Editor objectedit;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -56,7 +58,7 @@ abstract class LoginActivity extends AppCompatActivity implements View.OnClickLi
                 progressDialog.setCanceledOnTouchOutside(false);
                 progressDialog.setMessage("Signing you in.....");
                 progressDialog.show();
-                if((userNameEditText.getText().toString() == "") || (passwordEditText.getText().toString() == ""))
+                if((userNameEditText.getText().toString().equals("")) || (passwordEditText.getText().toString().equals("")))
                 {
                     Toast.makeText(LoginActivity.this, "Password or Username field is missing", Toast.LENGTH_SHORT).show();
                     progressDialog.dismiss();
@@ -65,42 +67,39 @@ abstract class LoginActivity extends AppCompatActivity implements View.OnClickLi
                 {
                     email = userNameEditText.getText().toString();
                     password = passwordEditText.getText().toString();
-                    getInfo(email, password);
+                    getAccessToken(email, password);
                 }
             }
         });
     }
 
-    public String get_url = URL.domain;
+    public String url = URL.domain + "login";
     public String JSONResponse;
     public SharedPreferences sharedPreferences;
     public SharedPreferences.Editor editor;
     public boolean IS_RESULT_RECEIVED=false;
 
-    public void getInfo(String email, final String password)
+    public void getAccessToken(String email, final String password)
     {
         final String id = email;
         progressDialog.setMessage("Getting your data...");
-        Log.d("url", get_url);
-        StringRequest stringRequest = new StringRequest(Request.Method.POST, get_url,
+        Log.d("url", url);
+        StringRequest stringRequest = new StringRequest(Request.Method.GET, url,
                 new Response.Listener<String>() {
                     @Override
-                    public void onResponse(String response) {
-                        JSONResponse = response;
+                    public void onResponse(String response)
+                    {
+                        Toast.makeText(getApplicationContext(), response, Toast.LENGTH_LONG).show();
                         Log.d("TAG", response);
                         sharedPreferences = getSharedPreferences("user", Context.MODE_PRIVATE);
                         editor = sharedPreferences.edit();
                         progressDialog.setMessage("Response Received");
                         Log.d("Email:", "This is email" + id);
-                        try {
-                            JSONArray jsonArray = new JSONArray(response);
-                            JSONObject jsonObject = jsonArray.getJSONObject(0);
-                            int id = jsonObject.getInt("id");
-                            String first_name = jsonObject.getString("first_name");
-                            String last_name = jsonObject.getString("last_name");
-                            editor.putInt("id", id);
-                            editor.putString("first_name", first_name);
-                            editor.putString("last_name", last_name);
+                        try
+                        {
+                            JSONObject jsonObject = new JSONObject(response);
+                            access_token = jsonObject.getString("access_token");
+                            editor.putString("access_token", access_token);
                             editor.commit();
                         }
                         catch (JSONException e){}
@@ -123,18 +122,16 @@ abstract class LoginActivity extends AppCompatActivity implements View.OnClickLi
         }) {
 
             @Override
-            protected Map<String,String> getParams() throws AuthFailureError {
-
+            protected Map<String,String> getParams() throws AuthFailureError
+            {
                 Map<String,String> params=new HashMap<String, String>();
-                String query = String.format("mutation{login(data:{email:\"%s\" password:\"%s\"}){token user{name role email}}}",id,password);
-
                 params.put("email", id);
                 params.put("password", password);
                 return params;
             }
         };
         int socketTimeout=60000;
-        RetryPolicy policy=new DefaultRetryPolicy(socketTimeout,DefaultRetryPolicy.DEFAULT_MAX_RETRIES,DefaultRetryPolicy.DEFAULT_BACKOFF_MULT);
+        RetryPolicy policy = new DefaultRetryPolicy(socketTimeout,DefaultRetryPolicy.DEFAULT_MAX_RETRIES,DefaultRetryPolicy.DEFAULT_BACKOFF_MULT);
         stringRequest.setRetryPolicy(policy);
         MySingleton.getInstance(LoginActivity.this).addToRequestQueue(stringRequest);
     }
@@ -145,8 +142,8 @@ abstract class LoginActivity extends AppCompatActivity implements View.OnClickLi
         {
             Intent intent = new Intent(LoginActivity.this, MainActivity.class);
             startActivity(intent);
-            progressDialog.dismiss();
             finish();
+            progressDialog.dismiss();
         }
         else
         {
@@ -154,6 +151,5 @@ abstract class LoginActivity extends AppCompatActivity implements View.OnClickLi
             Toast.makeText(LoginActivity.this,"Oops!! Something went wrong",Toast.LENGTH_SHORT).show();
         }
     }
-
 
 }
