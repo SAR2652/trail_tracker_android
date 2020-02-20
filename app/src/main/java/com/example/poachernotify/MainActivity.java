@@ -135,7 +135,7 @@ public class MainActivity extends AppCompatActivity {
                 return headers;
             }
         };
-
+        MySingleton.getInstance(MainActivity.this).addToRequestQueue(stringRequest);
         // call API to return a list of all cameras
         progressDialog.setMessage("Getting the list of available cameras...");
         StringRequest cameraStringRequest = new StringRequest(Request.Method.GET, get_cameras_url,
@@ -144,6 +144,7 @@ public class MainActivity extends AppCompatActivity {
                     public void onResponse(String response)
                     {
                         progressDialog.setMessage("Response Received.");
+                        Toast.makeText(getApplicationContext(), response, Toast.LENGTH_LONG).show();
                         JSONResponse = response;
                         try {
                             JSONArray jsonArray = new JSONArray(response);

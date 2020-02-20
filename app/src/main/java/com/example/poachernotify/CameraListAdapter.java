@@ -69,7 +69,7 @@ public class CameraListAdapter extends RecyclerView.Adapter<CameraListAdapter.My
                 progressDialog = new ProgressDialog(mCtx);
                 progressDialog.setIndeterminate(true);
                 progressDialog.setCanceledOnTouchOutside(false);
-                progressDialog.setMessage("Getting the list of available cameras...");
+                progressDialog.setMessage("Loading camera feed...");
                 progressDialog.show();
                 intentBundle.putString("camera_id", Integer.toString(camera.ret_camera_id()));
                 intentBundle.putString("latitude", Integer.toString(camera.retLat()));

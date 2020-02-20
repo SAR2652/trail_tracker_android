@@ -84,12 +84,11 @@ public class LoginActivity extends AppCompatActivity {
         final String id = email;
         progressDialog.setMessage("Getting your data...");
         Log.d("url", url);
-        StringRequest stringRequest = new StringRequest(Request.Method.GET, url,
+        StringRequest stringRequest = new StringRequest(Request.Method.POST, url,
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response)
                     {
-                        Toast.makeText(getApplicationContext(), response, Toast.LENGTH_LONG).show();
                         Log.d("TAG", response);
                         sharedPreferences = getSharedPreferences("user", Context.MODE_PRIVATE);
                         editor = sharedPreferences.edit();
