@@ -12,10 +12,12 @@ import android.util.Log;
 import android.widget.Toast;
 
 import com.android.volley.AuthFailureError;
+import com.android.volley.DefaultRetryPolicy;
 import com.android.volley.NetworkError;
 import com.android.volley.NoConnectionError;
 import com.android.volley.Request;
 import com.android.volley.Response;
+import com.android.volley.RetryPolicy;
 import com.android.volley.ServerError;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
@@ -24,39 +26,34 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity
+{
 
     private RecyclerView recyclerView;
     private RecyclerView.Adapter mAdapter;
-    private RecyclerView.LayoutManager layoutManager;
-    private List<Camera> Cameras;
     private ProgressDialog progressDialog;
     private String get_cameras_url = URL.domain + "getCameraList";
     private String get_auth_user_url = URL.domain + "user";
-    public String JSONResponse, user_type, zone;
+    private String access_token;
+    public String JSONResponse;
+    private List<Camera> Cameras;
     SharedPreferences object;
     SharedPreferences.Editor objectedit;
 
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+    public interface VolleyCallBack {
+        void onSuccess();
+    }
 
-        progressDialog = new ProgressDialog(MainActivity.this);
-        progressDialog.setIndeterminate(true);
-        progressDialog.setCanceledOnTouchOutside(false);
-        progressDialog.setMessage("Retrieving User Data...");
-        progressDialog.show();
-
-        object = getSharedPreferences("user", Context.MODE_PRIVATE);
-        final String access_token = object.getString("access_token", null);
-
-        // call API to obtain user data
-        StringRequest stringRequest = new StringRequest(Request.Method.GET, get_auth_user_url,
+    // API call to obtain user data
+    public void getUserData(String access_token)
+    {
+        final String token = access_token;
+        StringRequest userStringRequest = new StringRequest(Request.Method.GET, get_auth_user_url,
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
@@ -71,6 +68,7 @@ public class MainActivity extends AppCompatActivity {
                             String email = userJSONObject.getString("email");
                             int type_id = userJSONObject.getInt("type_id");
                             int zone_id = userJSONObject.getInt("zone_id");
+                            String user_type, zone;
                             if(type_id == 1)
                             {
                                 user_type = "admin";
@@ -105,8 +103,8 @@ public class MainActivity extends AppCompatActivity {
                             objectedit.putString("middle_name", middle_name);
                             objectedit.putString("last_name", last_name);
                             objectedit.putString("email", email);
-                            objectedit.putString("Type", user_type);
-                            objectedit.putString("Zone", zone);
+                            objectedit.putString("type", user_type);
+                            objectedit.putString("zone", zone);
                             objectedit.commit();
                         } catch(JSONException e) {}
                     }
@@ -131,48 +129,54 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public Map<String, String> getHeaders() throws AuthFailureError {
                 Map<String, String> headers = new HashMap<String, String>();
-                headers.put("Authorization", "Bearer " + access_token);
+                headers.put("Authorization", "Bearer " + token);
                 return headers;
             }
         };
-        MySingleton.getInstance(MainActivity.this).addToRequestQueue(stringRequest);
-        // call API to return a list of all cameras
-        progressDialog.setMessage("Getting the list of available cameras...");
+        MySingleton.getInstance(MainActivity.this).addToRequestQueue(userStringRequest);
+    }
+
+    public List<Camera> getCameras(final VolleyCallBack callback)
+    {
+        final List<Camera> LocalCameras = new ArrayList<>();
         StringRequest cameraStringRequest = new StringRequest(Request.Method.GET, get_cameras_url,
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response)
                     {
                         progressDialog.setMessage("Response Received.");
-                        Toast.makeText(getApplicationContext(), response, Toast.LENGTH_LONG).show();
-                        JSONResponse = response;
+                        Log.d("Response", response);
                         try {
-                            JSONArray jsonArray = new JSONArray(response);
+                            JSONObject jsonObject = new JSONObject(response);
+                            JSONArray jsonArray = jsonObject.getJSONArray("data");
                             JSONArray cameraJsonArray = jsonArray.getJSONArray(0);
                             JSONArray zoneJsonArray = jsonArray.getJSONArray(1);
+                            JSONObject cameraJsonObject = null;
                             for(int i = 0; i < cameraJsonArray.length(); i++)
                             {
-                                JSONObject jsonObject = cameraJsonArray.getJSONObject(i);
-                                int camera_id = jsonObject.getInt("camera_id");
-                                int latitude = jsonObject.getInt("latitude");
-                                int longitude = jsonObject.getInt("longitude");
+                                cameraJsonObject = cameraJsonArray.getJSONObject(i);
+                                int camera_id = cameraJsonObject.getInt("camera_id");
+                                int longitude = cameraJsonObject.getInt("longitude");
+                                int latitude = cameraJsonObject.getInt("latitude");
 
                                 JSONArray intermediateZoneArray = zoneJsonArray.getJSONArray(i);
                                 JSONObject zoneJsonObject = intermediateZoneArray.getJSONObject(0);
-                                String zone = zoneJsonObject.getString("zone");
-                                Cameras.add(new Camera(camera_id, latitude, longitude, zone));
+                                String zone = zoneJsonObject.getString("zone_name");
+                                LocalCameras.add(new Camera(camera_id, latitude, longitude, zone));
+                                callback.onSuccess();
                             }
-                        } catch(JSONException e) {}
+                            Log.d("Camera", Integer.toString(Cameras.size()));
+                        } catch(JSONException e) {e.printStackTrace();}
                     }
                 }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error)
             {
                 Log.d("Error", "Volley Error");
-                Toast.makeText(MainActivity.this, "Volley Error", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getApplicationContext(), "Volley Error", Toast.LENGTH_SHORT).show();
             }
-        }) {
-
+        })
+        {
             // Send headers instead of parameters
             @Override
             public Map<String, String> getHeaders() throws AuthFailureError {
@@ -181,21 +185,48 @@ public class MainActivity extends AppCompatActivity {
                 return headers;
             }
         };
-        MySingleton.getInstance(MainActivity.this).addToRequestQueue(stringRequest);
+        MySingleton.getInstance(MainActivity.this).addToRequestQueue(cameraStringRequest);
+        return LocalCameras;
+    }
 
-        recyclerView = (RecyclerView) findViewById(R.id.camera_recycler_view);
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
 
-        // use this setting to improve performance if you know that changes
-        // in content do not change the layout size of the RecyclerView
-        recyclerView.setHasFixedSize(true);
+        progressDialog = new ProgressDialog(MainActivity.this);
+        progressDialog.setIndeterminate(true);
+        progressDialog.setCanceledOnTouchOutside(false);
+        progressDialog.setMessage("Retrieving User Data...");
+        progressDialog.show();
 
-        // use a linear layout manager
-        layoutManager = new LinearLayoutManager(this);
-        recyclerView.setLayoutManager(layoutManager);
+        object = getSharedPreferences("user", Context.MODE_PRIVATE);
+        access_token = object.getString("access_token", null);
 
-        // specify an adapter (see also next example)
-        mAdapter = new CameraListAdapter(MainActivity.this, Cameras);
-        recyclerView.setAdapter(mAdapter);
-        progressDialog.dismiss();
+        // retrieve and save user data
+        getUserData(access_token);
+
+        // retrieve list of cameras
+        Cameras = getCameras(new VolleyCallBack() {
+            @Override
+            public void onSuccess()
+            {
+                recyclerView = (RecyclerView) findViewById(R.id.camera_recycler_view);
+
+                // use this setting to improve performance if you know that changes
+                // in content do not change the layout size of the RecyclerView
+                recyclerView.setHasFixedSize(true);
+
+                // use a linear layout manager
+                RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getApplicationContext());
+                recyclerView.setLayoutManager(layoutManager);
+
+                // specify an adapter (see also next example)
+                mAdapter = new CameraListAdapter(MainActivity.this, Cameras);
+                recyclerView.setAdapter(mAdapter);
+                mAdapter.notifyDataSetChanged();
+                progressDialog.dismiss();
+            }
+        });
     }
 }

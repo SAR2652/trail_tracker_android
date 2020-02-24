@@ -17,7 +17,7 @@ import java.util.List;
 public class CameraListAdapter extends RecyclerView.Adapter<CameraListAdapter.MyViewHolder>
 {
     private Context mCtx;
-    public List<Camera> Cameras;
+    private List<Camera> Cameras;
     public ProgressDialog progressDialog;
 
     public CameraListAdapter(Context mCtx, List<Camera> Cameras)
@@ -28,17 +28,23 @@ public class CameraListAdapter extends RecyclerView.Adapter<CameraListAdapter.My
 
     public class MyViewHolder extends RecyclerView.ViewHolder
     {
-        LinearLayout camera_item_layout;
-        TextView camera_id, latitude_val, longitude_val, zone_val;
+        LinearLayout camera_item_layout, latitude_layout, longitude_layout, zone_layout;
+        TextView camera_id, latitude, latitude_val, longitude, longitude_val, zone, zone_val;
 
         public MyViewHolder(View itemView)
         {
             super(itemView);
             this.camera_id = (TextView) itemView.findViewById(R.id.camera_id);
+            this.latitude = (TextView) itemView.findViewById(R.id.latitude_label);
             this.latitude_val = (TextView) itemView.findViewById(R.id.latitude_val);
+            this.longitude = (TextView) itemView.findViewById(R.id.longitude_label);
             this.longitude_val = (TextView) itemView.findViewById(R.id.longitude_val);
+            this.zone = (TextView) itemView.findViewById(R.id.zone_label);
             this.zone_val=(TextView)itemView.findViewById(R.id.zone_val);
             this.camera_item_layout = (LinearLayout) itemView.findViewById(R.id.camera_item_layout);
+            this.latitude_layout = (LinearLayout) itemView.findViewById(R.id.latitude_layout);
+            this.longitude_layout = (LinearLayout) itemView.findViewById(R.id.longitude_layout);
+            this.zone_layout = (LinearLayout) itemView.findViewById(R.id.zone_layout);
         }
     }
 
@@ -65,7 +71,7 @@ public class CameraListAdapter extends RecyclerView.Adapter<CameraListAdapter.My
             public void onClick(View v)
             {
                 Intent intent = new Intent(mCtx, VideoActivity.class);
-                Bundle intentBundle=new Bundle();
+                Bundle intentBundle = new Bundle();
                 progressDialog = new ProgressDialog(mCtx);
                 progressDialog.setIndeterminate(true);
                 progressDialog.setCanceledOnTouchOutside(false);

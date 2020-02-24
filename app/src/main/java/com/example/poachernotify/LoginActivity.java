@@ -93,11 +93,12 @@ public class LoginActivity extends AppCompatActivity {
                         sharedPreferences = getSharedPreferences("user", Context.MODE_PRIVATE);
                         editor = sharedPreferences.edit();
                         progressDialog.setMessage("Response Received");
-                        Log.d("Email:", "This is email" + id);
+                        Log.d("Email:", "This is email " + id);
+                        JSONResponse = response;
                         try
                         {
                             JSONObject jsonObject = new JSONObject(response);
-                            access_token = jsonObject.getString("access_token");
+                            access_token = jsonObject.getString("token");
                             editor.putString("access_token", access_token);
                             editor.commit();
                         }
@@ -140,8 +141,8 @@ public class LoginActivity extends AppCompatActivity {
         if(req.equals("in"))
         {
             Intent intent = new Intent(LoginActivity.this, MainActivity.class);
-            startActivity(intent);
             finish();
+            startActivity(intent);
             progressDialog.dismiss();
         }
         else

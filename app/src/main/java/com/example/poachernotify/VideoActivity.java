@@ -37,9 +37,9 @@ public class VideoActivity extends AppCompatActivity {
 
         Intent extras = getIntent();
         Bundle obj=extras.getExtras();
-        int camera_id = obj.getInt("camera_id");
-        int latitude = obj.getInt("latitude");
-        int longitude = obj.getInt("longitude");
+        String camera_id = obj.getString("camera_id");
+        String latitude = obj.getString("latitude");
+        String longitude = obj.getString("longitude");
         String zone = obj.getString("zone");
 
         camera_id_val = (TextView) findViewById(R.id.camera_id_val);
@@ -47,10 +47,10 @@ public class VideoActivity extends AppCompatActivity {
         longitude_val = (TextView) findViewById(R.id.longitude_val);
         zone_val = (TextView) findViewById(R.id.zone_val);
 
-        camera_id_val.setText(Integer.toString(camera_id));
-        latitude_val.setText(Integer.toString(latitude));
-        longitude_val.setText(Integer.toString(longitude));
-        zone_val.setText((zone));
+        camera_id_val.setText(camera_id);
+        latitude_val.setText(latitude);
+        longitude_val.setText(longitude);
+        zone_val.setText(zone);
 
         VideoView videoView = (VideoView) findViewById(R.id.video_player);
         String video_url = URL.domain + "stream";
