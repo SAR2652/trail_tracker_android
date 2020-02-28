@@ -3,5 +3,11 @@
     <string name="username">Username</string>
     <string name="password">Password</string>
     <string name="search">Search</string>
-    <string name="sign_in">Sign In</string>
+    <string name="login">Login</string>
+    <string name="logout">Logout</string>
+    <string name="profile">Profile</string>
+    <string name="camera">Camera</string>
+    <string name="latitude">Latitude :</string>
+    <string name="longitude">Longitude :</string>
+    <string name="zone">Zone :</string>
 </resources>

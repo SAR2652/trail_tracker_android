@@ -1,16 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    android:orientation="vertical"
+    android:orientation="horizontal"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:id="@+id/camera_item_layout">
 
     <TextView
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/camera_id"
-        android:textSize="25sp"
+        android:textSize="50sp"
         android:textStyle="bold"
         android:layout_marginTop="10dp"
         android:layout_marginRight="10dp"
@@ -18,77 +18,88 @@
         android:hint="1"/>
 
     <LinearLayout
-        android:id="@+id/latitude_layout"
+        android:layout_toEndOf="@id/camera_id"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:id="@+id/latitude_label"
-            android:textSize="20sp"
-            android:layout_marginRight="10dp"
-            android:layout_marginLeft="10dp"
-            android:text="Latitude :"
-            android:hint="1"/>
-
-        <TextView
-            android:id="@+id/latitude_val"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:hint="35"
-            android:textStyle="bold"
-            android:textSize="20sp" />
-
-    </LinearLayout>
-
-    <LinearLayout
-        android:id="@+id/longitude_layout"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content">
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:id="@+id/longitude_label"
-            android:textSize="20sp"
-            android:layout_marginLeft="10dp"
-            android:layout_marginRight="10dp"
-            android:text="Longitude :" />
-
-        <TextView
-            android:id="@+id/longitude_val"
+        <LinearLayout
+            android:id="@+id/latitude_layout"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:textStyle="bold"
-            android:hint="25"
-            android:textSize="20sp" />
-    </LinearLayout>
+            android:layout_height="wrap_content">
 
-    <LinearLayout
-        android:id="@+id/zone_layout"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/latitude_label"
+                android:textSize="20sp"
+                android:layout_marginRight="10dp"
+                android:layout_marginLeft="10dp"
+                android:text="@string/latitude"
+                android:hint="1"/>
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:id="@+id/zone_label"
-            android:textSize="20sp"
-            android:layout_marginLeft="10dp"
-            android:layout_marginRight="10dp"
-            android:text="Zone :" />
+            <TextView
+                android:id="@+id/latitude_val"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:hint="35"
+                android:textStyle="bold"
+                android:textSize="20sp" />
 
-        <TextView
-            android:id="@+id/zone_val"
-            android:textStyle="bold"
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/longitude_layout"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:hint="North"
-            android:textSize="20sp" />
+            android:layout_height="wrap_content">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/longitude_label"
+                android:textSize="20sp"
+                android:layout_marginLeft="10dp"
+                android:layout_marginRight="10dp"
+                android:text="@string/longitude" />
+
+            <TextView
+                android:id="@+id/longitude_val"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:textStyle="bold"
+                android:hint="25"
+                android:textSize="20sp" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/zone_layout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/zone_label"
+                android:textSize="20sp"
+                android:layout_marginLeft="10dp"
+                android:layout_marginRight="10dp"
+                android:text="@string/zone" />
+
+            <TextView
+                android:id="@+id/zone_val"
+                android:textStyle="bold"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:hint="North"
+                android:textSize="20sp" />
+
+        </LinearLayout>
+
 
     </LinearLayout>
 
-</LinearLayout>
+
+
+</RelativeLayout>

@@ -18,7 +18,7 @@
             android:textSize="40sp"
             android:layout_marginLeft="10dp"
             android:layout_marginTop="10dp"
-            android:text="Camera"/>
+            android:text="@string/camera"/>
 
         <TextView
             android:layout_width="match_parent"
@@ -68,7 +68,7 @@
             android:textSize="20sp"
             android:layout_marginLeft="10dp"
             android:layout_marginRight="10dp"
-            android:text="Longitude :" />
+            android:text="@string/longitude" />
 
         <TextView
             android:id="@+id/longitude_val"
@@ -91,7 +91,7 @@
             android:textSize="20sp"
             android:layout_marginLeft="10dp"
             android:layout_marginRight="10dp"
-            android:text="Zone :" />
+            android:text="@string/zone" />
 
         <TextView
             android:id="@+id/zone_val"
@@ -108,9 +108,9 @@
         android:layout_width="match_parent"
         android:layout_height="75dp" />
 
-    <VideoView
+    <WebView
         android:layout_width="match_parent"
-        android:layout_height="250dp"
+        android:layout_height="360dp"
         android:layout_marginLeft="25dp"
         android:layout_marginRight="25dp"
         android:id="@+id/video_player" />

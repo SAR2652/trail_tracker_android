@@ -8,11 +8,10 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
+import android.webkit.WebView;
 import android.widget.MediaController;
 import android.widget.TextView;
 import android.widget.VideoView;
-
-import com.android.volley.AuthFailureError;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -52,16 +51,15 @@ public class VideoActivity extends AppCompatActivity {
         longitude_val.setText(longitude);
         zone_val.setText(zone);
 
-        VideoView videoView = (VideoView) findViewById(R.id.video_player);
-        String video_url = URL.domain + "stream";
-        Uri vidUri = Uri.parse(video_url);
+//        camera_id_val.setText("1");
+//        latitude_val.setText("50");
+//        longitude_val.setText("33");
+//        zone_val.setText("North");
 
-        videoView.setVideoURI(vidUri, getHeaders());
-        MediaController vidControl = new MediaController(this);
-        vidControl.setAnchorView(videoView);
-        videoView.setMediaController(vidControl);
+        WebView videoView = (WebView) findViewById(R.id.video_player);
+        String video_url = URL.stream_domain;
+        videoView.loadUrl(video_url);
         progressDialog.dismiss();
-        videoView.start();
     }
 
     protected Map<String, String> getHeaders() {

@@ -8,6 +8,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import androidx.recyclerview.widget.RecyclerView;
@@ -28,7 +29,8 @@ public class CameraListAdapter extends RecyclerView.Adapter<CameraListAdapter.My
 
     public class MyViewHolder extends RecyclerView.ViewHolder
     {
-        LinearLayout camera_item_layout, latitude_layout, longitude_layout, zone_layout;
+        RelativeLayout camera_item_layout;
+        LinearLayout latitude_layout, longitude_layout, zone_layout;
         TextView camera_id, latitude, latitude_val, longitude, longitude_val, zone, zone_val;
 
         public MyViewHolder(View itemView)
@@ -41,7 +43,7 @@ public class CameraListAdapter extends RecyclerView.Adapter<CameraListAdapter.My
             this.longitude_val = (TextView) itemView.findViewById(R.id.longitude_val);
             this.zone = (TextView) itemView.findViewById(R.id.zone_label);
             this.zone_val=(TextView)itemView.findViewById(R.id.zone_val);
-            this.camera_item_layout = (LinearLayout) itemView.findViewById(R.id.camera_item_layout);
+            this.camera_item_layout = (RelativeLayout) itemView.findViewById(R.id.camera_item_layout);
             this.latitude_layout = (LinearLayout) itemView.findViewById(R.id.latitude_layout);
             this.longitude_layout = (LinearLayout) itemView.findViewById(R.id.longitude_layout);
             this.zone_layout = (LinearLayout) itemView.findViewById(R.id.zone_layout);

@@ -1,14 +1,22 @@
 package com.example.poachernotify;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.NotificationCompat;
+import androidx.core.app.NotificationManagerCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
+import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.widget.Toast;
 
 import com.android.volley.AuthFailureError;
@@ -38,102 +46,19 @@ public class MainActivity extends AppCompatActivity
     private RecyclerView.Adapter mAdapter;
     private ProgressDialog progressDialog;
     private String get_cameras_url = URL.domain + "getCameraList";
-    private String get_auth_user_url = URL.domain + "user";
+
     private String access_token;
     public String JSONResponse;
     private List<Camera> Cameras;
     SharedPreferences object;
-    SharedPreferences.Editor objectedit;
+    SharedPreferences.Editor objecteditor;
+
+    private static final String CHANNEL_ID = "trail_tracker_backend";
+    private static final String CHANNEL_NAME = "Trail Tracker: Anti-poaching Intelligence";
+    private static final String CHANNEL_DESC = "Trail Tracker: Anti-poaching Intelligence Notifications";
 
     public interface VolleyCallBack {
         void onSuccess();
-    }
-
-    // API call to obtain user data
-    public void getUserData(String access_token)
-    {
-        final String token = access_token;
-        StringRequest userStringRequest = new StringRequest(Request.Method.GET, get_auth_user_url,
-                new Response.Listener<String>() {
-                    @Override
-                    public void onResponse(String response) {
-                        progressDialog.setMessage("Response Received.");
-                        JSONResponse = response;
-                        try {
-                            JSONObject jsonObject = new JSONObject(response);
-                            JSONObject userJSONObject = jsonObject.getJSONObject("user");
-                            String first_name = userJSONObject.getString("first_name");
-                            String middle_name = userJSONObject.getString("middle_name");
-                            String last_name = userJSONObject.getString("last_name");
-                            String email = userJSONObject.getString("email");
-                            int type_id = userJSONObject.getInt("type_id");
-                            int zone_id = userJSONObject.getInt("zone_id");
-                            String user_type, zone;
-                            if(type_id == 1)
-                            {
-                                user_type = "admin";
-                            }
-                            else if(type_id == 2)
-                            {
-                                user_type = "officer";
-                            }
-                            else
-                            {
-                                user_type = "ranger";
-                            }
-
-                            if (zone_id == 1)
-                            {
-                                zone = "North";
-                            }
-                            else if(zone_id == 2)
-                            {
-                                zone = "South";
-                            }
-                            else if(zone_id == 3)
-                            {
-                                zone = "East";
-                            }
-                            else
-                            {
-                                zone = "West";
-                            }
-                            objectedit = object.edit();
-                            objectedit.putString("first_name", first_name);
-                            objectedit.putString("middle_name", middle_name);
-                            objectedit.putString("last_name", last_name);
-                            objectedit.putString("email", email);
-                            objectedit.putString("type", user_type);
-                            objectedit.putString("zone", zone);
-                            objectedit.commit();
-                        } catch(JSONException e) {}
-                    }
-                }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error)
-            {
-                progressDialog.dismiss();
-                //Log.d("Volley Error","Volley Error");
-                //Toast.makeText(LoginActivity.this, "Volley error", Toast.LENGTH_SHORT).show();
-                if(error instanceof ServerError)
-                {Log.d("Error","Server error");
-                    error.printStackTrace();}
-                if(error instanceof NetworkError)
-                {Log.d("Error","Network error");}
-                if (error instanceof NoConnectionError)
-                {Log.d("Error","No Connection error");}
-            }
-        })
-        {
-            // Send headers instead of parameters
-            @Override
-            public Map<String, String> getHeaders() throws AuthFailureError {
-                Map<String, String> headers = new HashMap<String, String>();
-                headers.put("Authorization", "Bearer " + token);
-                return headers;
-            }
-        };
-        MySingleton.getInstance(MainActivity.this).addToRequestQueue(userStringRequest);
     }
 
     public List<Camera> getCameras(final VolleyCallBack callback)
@@ -203,9 +128,6 @@ public class MainActivity extends AppCompatActivity
         object = getSharedPreferences("user", Context.MODE_PRIVATE);
         access_token = object.getString("access_token", null);
 
-        // retrieve and save user data
-        getUserData(access_token);
-
         // retrieve list of cameras
         Cameras = getCameras(new VolleyCallBack() {
             @Override
@@ -225,8 +147,65 @@ public class MainActivity extends AppCompatActivity
                 mAdapter = new CameraListAdapter(MainActivity.this, Cameras);
                 recyclerView.setAdapter(mAdapter);
                 mAdapter.notifyDataSetChanged();
+
+                if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)
+                {
+                    NotificationChannel channel = new NotificationChannel(CHANNEL_ID, CHANNEL_NAME, NotificationManager.IMPORTANCE_DEFAULT);
+                    channel.setDescription(CHANNEL_DESC);
+                    NotificationManager manager = getSystemService(NotificationManager.class);
+                    manager.createNotificationChannel(channel);
+                }
+
                 progressDialog.dismiss();
             }
         });
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the menu; this adds items to the action bar if it is present.
+        getMenuInflater().inflate(R.menu.menu_layout_options, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Handle action bar item clicks here. The action bar will
+        // automatically handle clicks on the Home/Up button, so long
+        // as you specify a parent activity in AndroidManifest.xml.
+        int id = item.getItemId();
+
+        //noinspection SimplifiableIfStatement
+        if (id == R.id.logout) {
+            Intent intent = new Intent(MainActivity.this, LoginActivity.class);
+            objecteditor.remove("access_token");
+            objecteditor.commit();
+            startActivity(intent);
+        }
+
+        if (id == R.id.profile)
+        {
+            Intent intent = new Intent(MainActivity.this, ProfileActivity.class);
+            startActivity(intent);
+        }
+
+        if(id == R.id.notify)
+        {
+            displayNotification();
+        }
+
+        return super.onOptionsItemSelected(item);
+    }
+
+    private void displayNotification()
+    {
+        NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(this,CHANNEL_ID)
+                .setSmallIcon(R.drawable.alert)
+                .setContentTitle("Alert!!!")
+                .setContentText("Camera 1, Longitude: 35, Latitude: 25, Zone: North")
+                .setPriority(NotificationCompat.PRIORITY_DEFAULT);
+
+        NotificationManagerCompat notificationManagerCompat = NotificationManagerCompat.from(this);
+        notificationManagerCompat.notify(1, mBuilder.build());
     }
 }
