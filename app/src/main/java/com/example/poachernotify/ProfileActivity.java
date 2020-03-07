@@ -35,7 +35,6 @@ public class ProfileActivity extends AppCompatActivity {
 
     private String get_auth_user_url = URL.domain + "user";
 
-
     // API call to obtain user data
     public void getUserData(String access_token)
     {

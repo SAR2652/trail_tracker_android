@@ -31,6 +31,8 @@ import org.json.JSONObject;
 import java.util.HashMap;
 import java.util.Map;
 
+
+// Always requires Internet connection to perform login.
 public class LoginActivity extends AppCompatActivity {
 
     EditText userNameEditText, passwordEditText;
@@ -79,6 +81,7 @@ public class LoginActivity extends AppCompatActivity {
     public SharedPreferences.Editor editor;
     public boolean IS_RESULT_RECEIVED=false;
 
+    // retrieve access token upon login
     public void getAccessToken(String email, final String password)
     {
         final String id = email;
@@ -100,7 +103,8 @@ public class LoginActivity extends AppCompatActivity {
                             JSONObject jsonObject = new JSONObject(response);
                             access_token = jsonObject.getString("token");
                             editor.putString("access_token", access_token);
-                            editor.commit();
+                            editor.putBoolean("logged", true);
+                            editor.apply();
                         }
                         catch (JSONException e){}
                         updateUI("in");
@@ -136,6 +140,7 @@ public class LoginActivity extends AppCompatActivity {
         MySingleton.getInstance(LoginActivity.this).addToRequestQueue(stringRequest);
     }
 
+    // update UI upon successful login.
     public void updateUI(String req)
     {
         if(req.equals("in"))

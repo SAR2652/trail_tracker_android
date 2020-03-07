@@ -41,14 +41,14 @@ import java.util.Map;
 
 public class MainActivity extends AppCompatActivity
 {
-
     private RecyclerView recyclerView;
     private RecyclerView.Adapter mAdapter;
     private ProgressDialog progressDialog;
+
+    private String get_auth_user_url = URL.domain + "user";
     private String get_cameras_url = URL.domain + "getCameraList";
 
     private String access_token;
-    public String JSONResponse;
     private List<Camera> Cameras;
     SharedPreferences object;
     SharedPreferences.Editor objecteditor;
@@ -125,18 +125,23 @@ public class MainActivity extends AppCompatActivity
         progressDialog.setMessage("Retrieving User Data...");
         progressDialog.show();
 
+        /*
+        Initialize a shared preferences object and retrieve the user's access token saved in it.
+         */
         object = getSharedPreferences("user", Context.MODE_PRIVATE);
         access_token = object.getString("access_token", null);
 
-        // retrieve list of cameras
+        /*
+        Due to slow JSON parsing of list of cameras and their details, callback is ensured
+        */
         Cameras = getCameras(new VolleyCallBack() {
             @Override
             public void onSuccess()
             {
                 recyclerView = (RecyclerView) findViewById(R.id.camera_recycler_view);
 
-                // use this setting to improve performance if you know that changes
-                // in content do not change the layout size of the RecyclerView
+                /* use this setting to improve performance if you know that changes
+                 in content do not change the layout size of the RecyclerView */
                 recyclerView.setHasFixedSize(true);
 
                 // use a linear layout manager
@@ -148,6 +153,10 @@ public class MainActivity extends AppCompatActivity
                 recyclerView.setAdapter(mAdapter);
                 mAdapter.notifyDataSetChanged();
 
+                /*
+                Listen to notification channel provided Android OS is
+                Android 8.0 Oreo or better.
+                */
                 if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)
                 {
                     NotificationChannel channel = new NotificationChannel(CHANNEL_ID, CHANNEL_NAME, NotificationManager.IMPORTANCE_DEFAULT);
@@ -168,11 +177,13 @@ public class MainActivity extends AppCompatActivity
         return true;
     }
 
+
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
+        /* Handle action bar item clicks here. The action bar will
+         automatically handle clicks on the Home/Up button, so long
+         as you specify a parent activity in AndroidManifest.xml. */
+
         int id = item.getItemId();
 
         //noinspection SimplifiableIfStatement
@@ -180,6 +191,7 @@ public class MainActivity extends AppCompatActivity
             Intent intent = new Intent(MainActivity.this, LoginActivity.class);
             objecteditor.remove("access_token");
             objecteditor.commit();
+            finish();
             startActivity(intent);
         }
 
@@ -194,9 +206,18 @@ public class MainActivity extends AppCompatActivity
             displayNotification();
         }
 
+        if(id == R.id.reload)
+        {
+            finish();
+            startActivity(getIntent());
+        }
+
         return super.onOptionsItemSelected(item);
     }
 
+    /*
+    Code to display notification
+     */
     private void displayNotification()
     {
         NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(this,CHANNEL_ID)
