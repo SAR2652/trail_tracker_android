@@ -10,6 +10,7 @@ import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -31,7 +32,7 @@ public class CameraListAdapter extends RecyclerView.Adapter<CameraListAdapter.My
     {
         RelativeLayout camera_item_layout;
         LinearLayout latitude_layout, longitude_layout, zone_layout;
-        TextView camera_id, latitude, latitude_val, longitude, longitude_val, zone, zone_val;
+        TextView camera_id, latitude, latitude_val, longitude, longitude_val, zone, zone_val, status, status_val;
 
         public MyViewHolder(View itemView)
         {
@@ -43,6 +44,8 @@ public class CameraListAdapter extends RecyclerView.Adapter<CameraListAdapter.My
             this.longitude_val = (TextView) itemView.findViewById(R.id.longitude_val);
             this.zone = (TextView) itemView.findViewById(R.id.zone_label);
             this.zone_val=(TextView)itemView.findViewById(R.id.zone_val);
+            this.status = (TextView) itemView.findViewById(R.id.status_label);
+            this.status_val = (TextView) itemView.findViewById(R.id.status_val);
             this.camera_item_layout = (RelativeLayout) itemView.findViewById(R.id.camera_item_layout);
             this.latitude_layout = (LinearLayout) itemView.findViewById(R.id.latitude_layout);
             this.longitude_layout = (LinearLayout) itemView.findViewById(R.id.longitude_layout);
@@ -67,22 +70,24 @@ public class CameraListAdapter extends RecyclerView.Adapter<CameraListAdapter.My
         holder.latitude_val.setText(Integer.toString(camera.retLat()));
         holder.longitude_val.setText(Integer.toString(camera.retLong()));
         holder.zone_val.setText(camera.retZone());
+        holder.status_val.setText(camera.retStatus());
 
         holder.camera_item_layout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v)
             {
-                Intent intent = new Intent(mCtx, VideoActivity.class);
-                Bundle intentBundle = new Bundle();
                 progressDialog = new ProgressDialog(mCtx);
                 progressDialog.setIndeterminate(true);
                 progressDialog.setCanceledOnTouchOutside(false);
                 progressDialog.setMessage("Loading camera feed...");
                 progressDialog.show();
+                Intent intent = new Intent(mCtx, VideoActivity.class);
+                Bundle intentBundle = new Bundle();
                 intentBundle.putString("camera_id", Integer.toString(camera.ret_camera_id()));
                 intentBundle.putString("latitude", Integer.toString(camera.retLat()));
                 intentBundle.putString("longitude", Integer.toString(camera.retLong()));
                 intentBundle.putString("zone", camera.retZone());
+                intentBundle.putString("status", camera.retStatus());
                 intent.putExtras(intentBundle);
                 mCtx.startActivity(intent);
                 progressDialog.dismiss();

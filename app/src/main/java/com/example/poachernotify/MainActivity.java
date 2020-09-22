@@ -8,6 +8,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
@@ -29,11 +30,15 @@ import com.android.volley.RetryPolicy;
 import com.android.volley.ServerError;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
+import com.github.nkzawa.socketio.client.IO;
+import com.github.nkzawa.socketio.client.Socket;
+import com.github.nkzawa.emitter.Emitter;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -52,6 +57,7 @@ public class MainActivity extends AppCompatActivity
     private List<Camera> Cameras;
     SharedPreferences object;
     SharedPreferences.Editor objecteditor;
+    private Socket mSocket;
 
     private static final String CHANNEL_ID = "trail_tracker_backend";
     private static final String CHANNEL_NAME = "Trail Tracker: Anti-poaching Intelligence";
@@ -83,11 +89,21 @@ public class MainActivity extends AppCompatActivity
                                 int camera_id = cameraJsonObject.getInt("camera_id");
                                 int longitude = cameraJsonObject.getInt("longitude");
                                 int latitude = cameraJsonObject.getInt("latitude");
-
+                                String camera_ip = cameraJsonObject.getString("camera_ip");
+                                int status_int = cameraJsonObject.getInt("status");
+                                String status = "";
+                                if(status_int == 1)
+                                {
+                                    status += "Active";
+                                }
+                                else
+                                {
+                                    status = "Inactive";
+                                }
                                 JSONArray intermediateZoneArray = zoneJsonArray.getJSONArray(i);
                                 JSONObject zoneJsonObject = intermediateZoneArray.getJSONObject(0);
                                 String zone = zoneJsonObject.getString("zone_name");
-                                LocalCameras.add(new Camera(camera_id, latitude, longitude, zone));
+                                LocalCameras.add(new Camera(camera_id, latitude, longitude, zone, camera_ip, status));
                                 callback.onSuccess();
                             }
                             Log.d("Camera", Integer.toString(Cameras.size()));
@@ -115,7 +131,8 @@ public class MainActivity extends AppCompatActivity
     }
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(Bundle savedInstanceState)
+    {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
@@ -164,10 +181,21 @@ public class MainActivity extends AppCompatActivity
                     NotificationManager manager = getSystemService(NotificationManager.class);
                     manager.createNotificationChannel(channel);
                 }
-
                 progressDialog.dismiss();
             }
         });
+
+        try {
+            mSocket = IO.socket(URL.channel_url);
+            mSocket.connect();
+            mSocket.on(Socket.EVENT_CONNECT, new Emitter.Listener() {
+                @Override
+                public void call(Object... args) {
+                    Log.d("TAG", "Socket Connected!");
+                }
+            });
+        } catch (URISyntaxException e) {}
+        mSocket.on("notification", onNotification);
     }
 
     @Override
@@ -189,8 +217,11 @@ public class MainActivity extends AppCompatActivity
         //noinspection SimplifiableIfStatement
         if (id == R.id.logout) {
             Intent intent = new Intent(MainActivity.this, LoginActivity.class);
-            objecteditor.remove("access_token");
-            objecteditor.commit();
+            try {
+                objecteditor.remove("access_token");
+                objecteditor.apply();
+            }
+            catch(Exception e) {}
             finish();
             startActivity(intent);
         }
@@ -203,7 +234,7 @@ public class MainActivity extends AppCompatActivity
 
         if(id == R.id.notify)
         {
-            displayNotification();
+            displayNotification("None");
         }
 
         if(id == R.id.reload)
@@ -215,15 +246,36 @@ public class MainActivity extends AppCompatActivity
         return super.onOptionsItemSelected(item);
     }
 
+    //implementing socket listeners
+    private Emitter.Listener onNotification = new Emitter.Listener() {
+        @Override
+        public void call(final Object... args) {
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    JSONObject jsonObject = (JSONObject) args[0];
+                    String details = "Camera: ";
+                    try { 
+                        details += jsonObject.getString("camera_id");
+                        details += ", Action: ";
+                        details += jsonObject.getString("action");
+                    } catch (JSONException e) {e.printStackTrace();}
+                    Toast.makeText(getApplicationContext(), details, Toast.LENGTH_SHORT).show();
+                    displayNotification(details);
+                }
+            });
+        }
+    };
+
     /*
     Code to display notification
      */
-    private void displayNotification()
+    private void displayNotification(String text)
     {
         NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(this,CHANNEL_ID)
                 .setSmallIcon(R.drawable.alert)
-                .setContentTitle("Alert!!!")
-                .setContentText("Camera 1, Longitude: 35, Latitude: 25, Zone: North")
+                .setContentTitle("Alert!")
+                .setContentText(text)
                 .setPriority(NotificationCompat.PRIORITY_DEFAULT);
 
         NotificationManagerCompat notificationManagerCompat = NotificationManagerCompat.from(this);

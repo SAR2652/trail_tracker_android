@@ -35,6 +35,10 @@ public class ProfileActivity extends AppCompatActivity {
 
     private String get_auth_user_url = URL.domain + "user";
 
+    public interface VolleyCallBack {
+        void onSuccess();
+    }
+
     // API call to obtain user data
     public void getUserData(String access_token)
     {
@@ -56,15 +60,15 @@ public class ProfileActivity extends AppCompatActivity {
                             String user_type, zone;
                             if(type_id == 1)
                             {
-                                user_type = "admin";
+                                user_type = "Admin";
                             }
                             else if(type_id == 2)
                             {
-                                user_type = "officer";
+                                user_type = "Officer";
                             }
                             else
                             {
-                                user_type = "ranger";
+                                user_type = "Ranger";
                             }
 
                             if (zone_id == 1)
@@ -90,7 +94,7 @@ public class ProfileActivity extends AppCompatActivity {
                             editor.putString("email", email);
                             editor.putString("type", user_type);
                             editor.putString("zone", zone);
-                            editor.commit();
+                            editor.apply();
                         } catch(JSONException e) {}
                     }
                 }, new Response.ErrorListener() {
@@ -142,7 +146,7 @@ public class ProfileActivity extends AppCompatActivity {
         String middle_name = object.getString("middle_name", null);
         String last_name = object.getString("last_name", null);
 
-        if (middle_name.equals(null))
+        if (middle_name == null)
         {
             full_name = first_name + " " + last_name;
         }

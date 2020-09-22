@@ -8,9 +8,11 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
+import android.view.View;
 import android.webkit.WebView;
 import android.widget.MediaController;
 import android.widget.TextView;
+import android.widget.Toast;
 import android.widget.VideoView;
 
 import java.util.HashMap;
@@ -19,7 +21,7 @@ import java.util.Map;
 public class VideoActivity extends AppCompatActivity {
 
     ProgressDialog progressDialog;
-    TextView camera_id_val, latitude_val, longitude_val, zone_val;
+    TextView camera_id_val, latitude_val, longitude_val, zone_val, status_val;
     SharedPreferences object;
     SharedPreferences.Editor objectedit;
 
@@ -40,16 +42,19 @@ public class VideoActivity extends AppCompatActivity {
         String latitude = obj.getString("latitude");
         String longitude = obj.getString("longitude");
         String zone = obj.getString("zone");
+        String status = obj.getString("status");
 
         camera_id_val = (TextView) findViewById(R.id.camera_id_val);
         latitude_val = (TextView) findViewById(R.id.latitude_val);
         longitude_val = (TextView) findViewById(R.id.longitude_val);
         zone_val = (TextView) findViewById(R.id.zone_val);
+        status_val = (TextView) findViewById(R.id.status_value);
 
         camera_id_val.setText(camera_id);
         latitude_val.setText(latitude);
         longitude_val.setText(longitude);
         zone_val.setText(zone);
+        status_val.setText(status);
 
 //        camera_id_val.setText("1");
 //        latitude_val.setText("50");
@@ -57,8 +62,16 @@ public class VideoActivity extends AppCompatActivity {
 //        zone_val.setText("North");
 
         WebView videoView = (WebView) findViewById(R.id.video_player);
-        String video_url = URL.stream_domain;
-        videoView.loadUrl(video_url);
+        if(status.equals("Inactive"))
+        {
+            videoView.setVisibility(View.GONE);
+            Toast.makeText(getApplicationContext(), "Camera is Inactive!", Toast.LENGTH_LONG).show();
+        }
+        else
+        {
+            String video_url = URL.stream_domain;
+            videoView.loadUrl(video_url);
+        }
         progressDialog.dismiss();
     }
 

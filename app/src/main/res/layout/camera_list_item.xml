@@ -24,82 +24,131 @@
         android:orientation="vertical">
 
         <LinearLayout
-            android:id="@+id/latitude_layout"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="match_parent"
+            android:layout_weight="1">
 
-            <TextView
-                android:layout_width="wrap_content"
+            <LinearLayout
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:id="@+id/latitude_label"
-                android:textSize="20sp"
-                android:layout_marginRight="10dp"
-                android:layout_marginLeft="10dp"
-                android:text="@string/latitude"
-                android:hint="1"/>
+                android:layout_marginTop="9dp">
 
-            <TextView
-                android:id="@+id/latitude_val"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:hint="35"
-                android:textStyle="bold"
-                android:textSize="20sp" />
+                <LinearLayout
+                    android:id="@+id/latitude_layout"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:id="@+id/latitude_label"
+                        android:textSize="22sp"
+                        android:layout_marginRight="10dp"
+                        android:layout_marginLeft="10dp"
+                        android:text="@string/latitude"
+                        android:hint="1"/>
+
+                    <TextView
+                        android:id="@+id/latitude_val"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:hint="35"
+                        android:textStyle="bold"
+                        android:textSize="22sp" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/longitude_layout"
+                    android:layout_width="match_parent"
+                    android:layout_weight="1"
+                    android:layout_height="wrap_content">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:id="@+id/longitude_label"
+                        android:textSize="22sp"
+                        android:layout_marginLeft="20dp"
+                        android:layout_marginRight="10dp"
+                        android:text="@string/longitude" />
+
+                    <TextView
+                        android:id="@+id/longitude_val"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:textStyle="bold"
+                        android:hint="25"
+                        android:textSize="22sp" />
+                </LinearLayout>
+
+            </LinearLayout>
 
         </LinearLayout>
 
         <LinearLayout
-            android:id="@+id/longitude_layout"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="match_parent"
+            android:layout_weight="1">
 
-            <TextView
+            <LinearLayout
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:id="@+id/longitude_label"
-                android:textSize="20sp"
-                android:layout_marginLeft="10dp"
-                android:layout_marginRight="10dp"
-                android:text="@string/longitude" />
+                android:layout_height="wrap_content">
 
-            <TextView
-                android:id="@+id/longitude_val"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:textStyle="bold"
-                android:hint="25"
-                android:textSize="20sp" />
+                <LinearLayout
+                    android:id="@+id/zone_layout"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:id="@+id/zone_label"
+                        android:textSize="22sp"
+                        android:layout_marginLeft="10dp"
+                        android:layout_marginRight="10dp"
+                        android:text="@string/zone" />
+
+                    <TextView
+                        android:id="@+id/zone_val"
+                        android:textStyle="bold"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:hint="North"
+                        android:textSize="22sp" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/status_layout"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="20dp">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:id="@+id/status_label"
+                        android:textSize="22sp"
+                        android:layout_marginLeft="1dp"
+                        android:layout_marginRight="10dp"
+                        android:text="@string/status" />
+
+                    <TextView
+                        android:id="@+id/status_val"
+                        android:textStyle="bold"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:hint="Active"
+                        android:textSize="22sp" />
+
+                </LinearLayout>
+
+            </LinearLayout>
+
         </LinearLayout>
-
-        <LinearLayout
-            android:id="@+id/zone_layout"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:id="@+id/zone_label"
-                android:textSize="20sp"
-                android:layout_marginLeft="10dp"
-                android:layout_marginRight="10dp"
-                android:text="@string/zone" />
-
-            <TextView
-                android:id="@+id/zone_val"
-                android:textStyle="bold"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:hint="North"
-                android:textSize="20sp" />
-
-        </LinearLayout>
-
 
     </LinearLayout>
-
-
 
 </RelativeLayout>
